@@ -1,0 +1,85 @@
+version: "3.9"
+
+networks:
+    remindme-laravel:
+        name: remindme-laravel
+
+services:
+
+    nginx:
+        build:
+            context: .
+            dockerfile: nginx.dockerfile
+        depends_on:
+            - php
+            - mysql
+        container_name: nginx
+        ports:
+            - 8000:80
+            - 443:443
+        volumes:
+            - ./src:/var/www/html
+        networks:
+            - remindme-laravel
+
+    php:
+        build:
+            context: .
+            dockerfile: php.dockerfile
+        container_name: php
+        volumes:
+            - ./src:/var/www/html
+        networks:
+            - remindme-laravel
+
+    composer:
+        image: composer:latest
+        container_name: composer
+        volumes:
+            - ./src:/var/www/html
+        working_dir: /var/www/html
+        networks:
+            - remindme-laravel
+
+    artisan:
+        build:
+            context: .
+            dockerfile: php.dockerfile
+        container_name: artisan
+        volumes:
+            - ./src:/var/www/html
+        working_dir: /var/www/html
+        entrypoint: ['php', 'artisan']
+        networks:
+            - remindme-laravel
+
+    npm:
+        image: node:current-alpine
+        container_name: npm
+        volumes:
+            - ./src:/var/www/html
+        working_dir: /var/www/html
+        entrypoint: ['npm']
+        networks:
+            - remindme-laravel
+
+    mysql:
+        image: mysql:8.0.35
+        container_name: mysql
+        ports:
+        - "3306:3306"
+        volumes:
+            - ./mysql:/var/lib/mysql
+        environment:
+            MYSQL_DATABASE: remindme
+            MYSQL_USER: laravel
+            MYSQL_PASSWORD: secret
+            MYSQL_ROOT_PASSWORD: secret
+        networks:
+            - remindme-laravel
+
+
+
+
+
+
