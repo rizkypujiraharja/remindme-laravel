@@ -4,7 +4,7 @@ namespace App\Traits;
 
 trait ApiResponses
 {
-    public function successApiResponse($data = [], $message = 'Success', $code = 200)
+    public function successApiResponse($data = [], $code = 200)
     {
         return response()->json([
             'ok' => true,
@@ -25,8 +25,10 @@ trait ApiResponses
         return response()->json($response, $code);
     }
 
-    public function notFound($message = 'Resource is not found', $error = 'ERR_NOT_FOUND', $code = 404)
+    public function okOnlyApiResponse($code = 200)
     {
-        return $this->errorApiResponse($message, $error, $code);
+        return response()->json([
+            'ok' => true
+        ], $code);
     }
 }

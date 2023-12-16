@@ -12,7 +12,7 @@ class ApiResponsesTest extends TestCase
 
     public function testSuccessApiResponse()
     {
-        $response = $this->successApiResponse(['foo' => 'bar'], 'Test success', 200);
+        $response = $this->successApiResponse(['foo' => 'bar'], 200);
         $this->assertInstanceOf(JsonResponse::class, $response);
         $this->assertEquals(200, $response->getStatusCode());
         $this->assertEquals(['ok' => true, 'data' => ['foo' => 'bar']], $response->getData(true));
@@ -27,12 +27,12 @@ class ApiResponsesTest extends TestCase
         $this->assertEquals(['ok' => false, 'err' => 'ERR_TEST', 'msg' => 'Test error', 'trace' => ['trace']], $response->getData(true));
     }
 
-    public function testNotFound()
+    public function testOkOnlyApiResoinse()
     {
-        $response = $this->notFound();
+        $response = $this->okOnlyApiResponse();
 
         $this->assertInstanceOf(JsonResponse::class, $response);
-        $this->assertEquals(404, $response->getStatusCode());
-        $this->assertEquals(['ok' => false, 'err' => 'ERR_NOT_FOUND', 'msg' => 'Resource is not found'], $response->getData(true));
+        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertEquals(['ok' => true], $response->getData(true));
     }
 }

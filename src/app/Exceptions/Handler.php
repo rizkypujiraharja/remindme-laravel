@@ -3,9 +3,12 @@
 namespace App\Exceptions;
 
 use App\Traits\ApiResponses;
+use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Auth\AuthenticationException;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
 use Illuminate\Validation\ValidationException;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Throwable;
 
 class Handler extends ExceptionHandler
@@ -42,9 +45,6 @@ class Handler extends ExceptionHandler
         $trace = $debug ? $e->getTrace() : [];
 
         if ($request->expectsJson()) {
-            if ($e->getCode() === 404) {
-                return $this->errorApiResponse($e->getMessage(), 'ERR_NOT_FOUND', 404, $trace);
-            }
 
             if ($e instanceof CommonErrorException) {
                 return $this->errorApiResponse($e->getMessage(), $e->getError(), $e->getCode(), $trace);
@@ -57,8 +57,11 @@ class Handler extends ExceptionHandler
                 } else {
                     throw new InvalidAccessTokenException();
                 }
+            } elseif ($e instanceof AuthorizationException) {
+                throw new ForbiddenAccessException();
+            } elseif ($e->getCode() === 404 || $e instanceof NotFoundHttpException || $e instanceof ModelNotFoundException) {
+                throw new NotFoundException();
             }
-
             $message = match (true) {
                 default => $e->getMessage() ?: 'An error occurred.',
             };
