@@ -17,6 +17,7 @@ class ReminderService implements ReminderServiceInterface
     {
         $reminders = Reminder::upcomingEvent()
             ->where('user_id', $request->user()->id)
+            ->orderBy('event_at')
             ->limit($request->limit)
             ->get();
 
