@@ -12,7 +12,7 @@ class ApiResponsesTest extends TestCase
 
     public function testSuccessApiResponse()
     {
-        $response = $this->successApiResponse(['foo' => 'bar'], 'Test success', 200);
+        $response = $this->successApiResponse(['foo' => 'bar'], 200);
         $this->assertInstanceOf(JsonResponse::class, $response);
         $this->assertEquals(200, $response->getStatusCode());
         $this->assertEquals(['ok' => true, 'data' => ['foo' => 'bar']], $response->getData(true));
