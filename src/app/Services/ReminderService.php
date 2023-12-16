@@ -21,7 +21,7 @@ class ReminderService implements ReminderServiceInterface
     public function store(ReminderCreateRequest $request): Reminder
     {
         $reminder = new Reminder;
-        $reminder->fill($request->validated());
+        $reminder->fill($request->only('title', 'description', 'remind_at', 'event_at'));
         $reminder->user_id = $request->user()->id;
         $reminder->save();
 
@@ -30,7 +30,7 @@ class ReminderService implements ReminderServiceInterface
 
     public function update(ReminderUpdateRequest $request, Reminder $reminder): Reminder
     {
-        $reminder->update($request->validated());
+        $reminder->update($request->only('title', 'description', 'remind_at', 'event_at'));
 
         return $reminder;
     }
