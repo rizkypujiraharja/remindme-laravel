@@ -3,7 +3,9 @@
 namespace App\Exceptions;
 
 use App\Traits\ApiResponses;
+use Illuminate\Auth\AuthenticationException;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
+use Illuminate\Validation\ValidationException;
 use Throwable;
 
 class Handler extends ExceptionHandler
@@ -46,6 +48,15 @@ class Handler extends ExceptionHandler
 
             if ($e instanceof CommonErrorException) {
                 return $this->errorApiResponse($e->getMessage(), $e->getError(), $e->getCode(), $trace);
+            } elseif ($e instanceof ValidationException) {
+                throw new BadRequestException($e->validator->errors()->first());
+            } elseif ($e instanceof AuthenticationException) {
+                $routeName = \Route::currentRouteName();
+                if ($routeName === 'refresh_token') {
+                    throw new InvalidRefreshTokenException();
+                } else {
+                    throw new InvalidAccessTokenException();
+                }
             }
 
             $message = match (true) {
