@@ -2,7 +2,7 @@
 
 namespace App\Services;
 
-use App\Exceptions\CommonErrorException;
+use App\Exceptions\InvalidCredException;
 use App\Http\Requests\LoginRequest;
 use App\Http\Resources\UserResource;
 use App\Interfaces\AuthServiceInterface;
@@ -16,7 +16,7 @@ class AuthService implements AuthServiceInterface
         $user = User::where('email', $request->email)->first();
 
         if (!$user || !Hash::check($request->password, $user->password)) {
-            throw new CommonErrorException('User not found or password is incorrect', 'ERR_INVALID_CREDENTIALS', 401);
+            throw new InvalidCredException();
         }
 
         $accessToken = $user->createToken('apiToken', ['manage-reminders'], now()->addSeconds(20))->plainTextToken;
