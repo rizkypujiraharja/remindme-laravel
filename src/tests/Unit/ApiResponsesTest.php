@@ -27,12 +27,12 @@ class ApiResponsesTest extends TestCase
         $this->assertEquals(['ok' => false, 'err' => 'ERR_TEST', 'msg' => 'Test error', 'trace' => ['trace']], $response->getData(true));
     }
 
-    public function testNotFound()
+    public function testOkOnlyApiResoinse()
     {
-        $response = $this->notFound();
+        $response = $this->okOnlyApiResponse();
 
         $this->assertInstanceOf(JsonResponse::class, $response);
-        $this->assertEquals(404, $response->getStatusCode());
-        $this->assertEquals(['ok' => false, 'err' => 'ERR_NOT_FOUND', 'msg' => 'Resource is not found'], $response->getData(true));
+        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertEquals(['ok' => true], $response->getData(true));
     }
 }
