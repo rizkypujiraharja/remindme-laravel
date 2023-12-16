@@ -13,7 +13,7 @@ use PHPUnit\Framework\TestCase;
 
 class CommonErrorExceptionTest extends TestCase
 {
-    public function test_common_error_exception(): void
+    public function testCommonErrorException(): void
     {
         $exception = new CommonErrorException();
         $this->assertEquals('Internal Server Error', $exception->getMessage());
@@ -21,7 +21,7 @@ class CommonErrorExceptionTest extends TestCase
         $this->assertEquals(500, $exception->getCode());
     }
 
-    public function test_common_error_exception_with_custom_error(): void
+    public function testCommonErrorExceptionWithCustomError(): void
     {
         $exception = new CommonErrorException('Something went wrong', 'ERR_CUSTOM_ERROR');
         $this->assertEquals('Something went wrong', $exception->getMessage());
@@ -29,7 +29,7 @@ class CommonErrorExceptionTest extends TestCase
         $this->assertEquals(500, $exception->getCode());
     }
 
-    public function test_bad_request_exception(): void
+    public function testBadRequestException(): void
     {
         $exception = new BadRequestException();
         $this->assertEquals('bad request', $exception->getMessage());
@@ -37,7 +37,7 @@ class CommonErrorExceptionTest extends TestCase
         $this->assertEquals(400, $exception->getCode());
     }
 
-    public function test_bad_request_exception_with_custom_error(): void
+    public function testBadRequestExceptionWithCustomError(): void
     {
         $exception = new BadRequestException('invalid value of `type`');
         $this->assertEquals('invalid value of `type`', $exception->getMessage());
@@ -45,7 +45,7 @@ class CommonErrorExceptionTest extends TestCase
         $this->assertEquals(400, $exception->getCode());
     }
 
-    public function test_forbidden_access_exception(): void
+    public function testForbiddenAccessException(): void
     {
         $exception = new ForbiddenAccessException();
         $this->assertEquals('user doesn\'t have enough authorization', $exception->getMessage());
@@ -53,7 +53,7 @@ class CommonErrorExceptionTest extends TestCase
         $this->assertEquals(403, $exception->getCode());
     }
 
-    public function test_invalid_access_token_exception(): void
+    public function testInvalidAccessTokenException(): void
     {
         $exception = new InvalidAccessTokenException();
         $this->assertEquals('invalid access token', $exception->getMessage());
@@ -61,7 +61,7 @@ class CommonErrorExceptionTest extends TestCase
         $this->assertEquals(401, $exception->getCode());
     }
 
-    public function test_invalid_credentials_exception(): void
+    public function testInvalidCredentialsException(): void
     {
         $exception = new InvalidCredException();
         $this->assertEquals('incorrect username or password', $exception->getMessage());
@@ -69,7 +69,7 @@ class CommonErrorExceptionTest extends TestCase
         $this->assertEquals(401, $exception->getCode());
     }
 
-    public function test_invalid_refresh_token_exception(): void
+    public function testInvalidRefreshTokenException(): void
     {
         $exception = new InvalidRefreshTokenException();
         $this->assertEquals('invalid refresh token', $exception->getMessage());
@@ -77,7 +77,7 @@ class CommonErrorExceptionTest extends TestCase
         $this->assertEquals(401, $exception->getCode());
     }
 
-    public function test_not_found_exception(): void
+    public function testNotFoundException(): void
     {
         $exception = new NotFoundException();
         $this->assertEquals('resource is not found', $exception->getMessage());
@@ -85,7 +85,7 @@ class CommonErrorExceptionTest extends TestCase
         $this->assertEquals(404, $exception->getCode());
     }
 
-    public function test_not_found_exception_with_custom_error(): void
+    public function testNotFoundExceptionWithCustomError(): void
     {
         $exception = new NotFoundException('user not found');
         $this->assertEquals('user not found', $exception->getMessage());

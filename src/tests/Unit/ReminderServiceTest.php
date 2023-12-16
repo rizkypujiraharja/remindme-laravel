@@ -2,6 +2,7 @@
 
 namespace Tests\Unit;
 
+use App\Exceptions\ForbiddenAccessException;
 use App\Http\Requests\ReminderCreateRequest;
 use App\Http\Requests\ReminderUpcomingRequest;
 use App\Http\Requests\ReminderUpdateRequest;
@@ -9,6 +10,7 @@ use App\Interfaces\ReminderServiceInterface;
 use App\Models\Reminder;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Http\Request;
 use Tests\TestCase;
 
 class ReminderServiceTest extends TestCase
@@ -77,10 +79,32 @@ class ReminderServiceTest extends TestCase
 
         $request = new ReminderUpdateRequest();
         $request->merge(['title' => 'New Title']);
+        $request->setUserResolver(function () {
+            return $this->user;
+        });
 
         $updatedReminder = $this->service->update($request, $reminder);
 
         $this->assertEquals('New Title', $updatedReminder->title);
+    }
+
+    public function testCannotUpdateReminderByOtherUser()
+    {
+        $reminder = Reminder::factory()->create([
+            'title' => 'Old Title',
+            'user_id' => $this->user->id
+        ]);
+
+        $otherUser = User::factory()->create();
+
+        $request = new ReminderUpdateRequest();
+        $request->merge(['title' => 'New Title']);
+        $request->setUserResolver(function () use ($otherUser) {
+            return $otherUser;
+        });
+
+        $this->expectException(ForbiddenAccessException::class);
+        $this->service->update($request, $reminder);
     }
 
     public function testDeleteReminder()
@@ -89,8 +113,29 @@ class ReminderServiceTest extends TestCase
             'user_id' => $this->user->id
         ]);
 
-        $this->service->destroy($reminder);
+        $request = new Request();
+        $request->setUserResolver(function () {
+            return $this->user;
+        });
+        $this->service->destroy($request, $reminder);
 
-        $this->assertDatabaseMissing('reminders', ['id' => $reminder->id]);
+        $this->assertNull(Reminder::find($reminder->id));
+    }
+
+    public function testCannotDeleteReminderByOtherUser()
+    {
+        $reminder = Reminder::factory()->create([
+            'user_id' => $this->user->id
+        ]);
+
+        $otherUser = User::factory()->create();
+
+        $request = new Request();
+        $request->setUserResolver(function () use ($otherUser) {
+            return $otherUser;
+        });
+
+        $this->expectException(ForbiddenAccessException::class);
+        $this->service->destroy($request, $reminder);
     }
 }

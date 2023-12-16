@@ -10,6 +10,7 @@ use App\Http\Resources\ReminderResource;
 use App\Interfaces\ReminderServiceInterface;
 use App\Models\Reminder;
 use App\Traits\ApiResponses;
+use Illuminate\Http\Request;
 
 class ReminderController extends Controller
 {
@@ -51,9 +52,9 @@ class ReminderController extends Controller
         return $this->successApiResponse(new ReminderResource($reminder));
     }
 
-    public function destroy(Reminder $reminder)
+    public function destroy(Request $request, Reminder $reminder)
     {
-        $this->reminderService->destroy($reminder);
+        $this->reminderService->destroy($request, $reminder);
 
         return $this->okOnlyApiResponse();
     }
