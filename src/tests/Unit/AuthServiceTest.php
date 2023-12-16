@@ -8,6 +8,7 @@ use App\Http\Requests\LoginRequest;
 use App\Interfaces\AuthServiceInterface;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Tests\TestCase;
 
@@ -53,5 +54,15 @@ class AuthServiceTest extends TestCase
 
         $service = app()->make(AuthServiceInterface::class);
         $service->login($request);
+    }
+
+    public function testRefreshToken()
+    {
+        $user = User::factory()->create();
+
+        $service = app()->make(AuthServiceInterface::class);
+        $result = $service->refreshToken($user);
+
+        $this->assertArrayHasKey('access_token', $result);
     }
 }
