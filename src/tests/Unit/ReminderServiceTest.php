@@ -15,24 +15,30 @@ class ReminderServiceTest extends TestCase
 {
     use RefreshDatabase;
 
+    protected $service;
+    protected $user;
+
+    protected function setUp(): void
+    {
+        parent::setUp();
+        $this->service = app()->make(ReminderServiceInterface::class);
+        $this->user = User::factory()->create();
+        $this->actingAs($this->user);
+    }
+
     public function testGetUpcomingReminders()
     {
-        $user = User::factory()->create();
-        $this->actingAs($user);
-
         $reminders = Reminder::factory([
-            'user_id' => $user->id,
+            'user_id' => $this->user->id,
         ])->count(5)->create();
 
         $request = new ReminderUpcomingRequest();
         $request->merge(['limit' => 5]);
-        $request->setUserResolver(function () use ($user) {
-            return $user;
+        $request->setUserResolver(function () {
+            return $this->user;
         });
 
-        $service = app()->make(ReminderServiceInterface::class);
-
-        $result = $service->getUpcomingReminders($request);
+        $result = $this->service->getUpcomingReminders($request);
 
         $this->assertCount(5, $result);
         $this->assertEquals($reminders->pluck('id'), $result->pluck('id'));
@@ -40,9 +46,6 @@ class ReminderServiceTest extends TestCase
 
     public function testStoreReminder()
     {
-        $user = User::factory()->create();
-        $this->actingAs($user);
-
         $request = new ReminderCreateRequest();
         $remindAt = now()->timestamp;
         $eventAt = now()->addDay()->timestamp;
@@ -52,49 +55,41 @@ class ReminderServiceTest extends TestCase
             'remind_at' => $remindAt,
             'event_at' => $eventAt,
         ]);
-        $request->setUserResolver(function () use ($user) {
-            return $user;
+        $request->setUserResolver(function () {
+            return $this->user;
         });
-        $service = app()->make(ReminderServiceInterface::class);
-        $reminder = $service->store($request);
+
+        $reminder = $this->service->store($request);
 
         $this->assertEquals('Test Reminder', $reminder->title);
         $this->assertEquals('Test Description', $reminder->description);
         $this->assertEquals($remindAt, $reminder->remind_at->timestamp);
         $this->assertEquals($eventAt, $reminder->event_at->timestamp);
-        $this->assertEquals($user->id, $reminder->user_id);
+        $this->assertEquals($this->user->id, $reminder->user_id);
     }
 
     public function testUpdateReminder()
     {
-        $user = User::factory()->create();
-        $this->actingAs($user);
-
         $reminder = Reminder::factory()->create([
             'title' => 'Old Title',
-            'user_id' => $user->id
+            'user_id' => $this->user->id
         ]);
 
         $request = new ReminderUpdateRequest();
         $request->merge(['title' => 'New Title']);
 
-        $service = app()->make(ReminderServiceInterface::class);
-        $updatedReminder = $service->update($request, $reminder);
+        $updatedReminder = $this->service->update($request, $reminder);
 
         $this->assertEquals('New Title', $updatedReminder->title);
     }
 
     public function testDeleteReminder()
     {
-        $user = User::factory()->create();
-        $this->actingAs($user);
-
         $reminder = Reminder::factory()->create([
-            'user_id' => $user->id
+            'user_id' => $this->user->id
         ]);
 
-        $service = app()->make(ReminderServiceInterface::class);
-        $service->destroy($reminder);
+        $this->service->destroy($reminder);
 
         $this->assertDatabaseMissing('reminders', ['id' => $reminder->id]);
     }
