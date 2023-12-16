@@ -21,7 +21,6 @@ Route::group(['middleware' => 'api'], function ($router) {
         ->middleware(['auth:sanctum', 'ability:refresh_token'])
         ->name('refresh_token');
 
-    Route::group(['middleware' => ['auth:sanctum', 'ability:manage-reminders']], function ($router) {
-        Route::get('/reminders', [ReminderController::class, 'index'])->name('reminders.index');
-    });
+    Route::apiResource('reminders', ReminderController::class)
+        ->middleware(['auth:sanctum', 'ability:manage-reminders']);
 });

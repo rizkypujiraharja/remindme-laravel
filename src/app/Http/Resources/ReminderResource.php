@@ -18,8 +18,8 @@ class ReminderResource extends JsonResource
             'id' => $this->id,
             'title' => $this->title,
             'description' => $this->description,
-            'remind_at' => $this->remind_at,
-            'event_at' => $this->event_at,
+            'remind_at' => $this->remind_at->timestamp,
+            'event_at' => $this->event_at->timestamp,
         ];
     }
 }
