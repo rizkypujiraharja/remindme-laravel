@@ -19,7 +19,7 @@ trait ApiResponses
             'err' => $error,
             'msg' => $message
         ];
-        if (config('app.debug')) {
+        if (config('app.debug') && !empty($trace)) {
             $response['trace'] = $trace;
         }
         return response()->json($response, $code);
