@@ -4,6 +4,7 @@ namespace App\Exceptions;
 
 use App\Traits\ApiResponses;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
+use Illuminate\Validation\ValidationException;
 use Throwable;
 
 class Handler extends ExceptionHandler
@@ -46,6 +47,8 @@ class Handler extends ExceptionHandler
 
             if ($e instanceof CommonErrorException) {
                 return $this->errorApiResponse($e->getMessage(), $e->getError(), $e->getCode(), $trace);
+            } elseif ($e instanceof ValidationException) {
+                throw new BadRequestException($e->validator->errors()->first());
             }
 
             $message = match (true) {
