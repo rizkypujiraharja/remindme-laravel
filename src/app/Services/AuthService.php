@@ -7,6 +7,7 @@ use App\Http\Requests\LoginRequest;
 use App\Http\Resources\UserResource;
 use App\Interfaces\AuthServiceInterface;
 use App\Models\User;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 
 class AuthService implements AuthServiceInterface
@@ -26,6 +27,15 @@ class AuthService implements AuthServiceInterface
             'user' => new UserResource($user),
             'access_token' => $accessToken,
             'refresh_token' => $refreshToken
+        ];
+    }
+
+    public function refreshToken(User $user)
+    {
+        $accessToken = $user->createToken('apiToken', ['manage-reminders'], now()->addSeconds(20))->plainTextToken;
+
+        return [
+            'access_token' => $accessToken,
         ];
     }
 }

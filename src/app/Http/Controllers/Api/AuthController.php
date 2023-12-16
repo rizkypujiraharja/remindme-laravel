@@ -20,4 +20,10 @@ class AuthController extends Controller
     {
         return $this->authService->login($request);
     }
+
+    public function refreshToken(Request $request)
+    {
+        $user = $request->user();
+        return $this->authService->refreshToken($user);
+    }
 }
