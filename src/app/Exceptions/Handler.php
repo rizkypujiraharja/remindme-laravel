@@ -3,6 +3,7 @@
 namespace App\Exceptions;
 
 use App\Traits\ApiResponses;
+use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Auth\AuthenticationException;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
 use Illuminate\Validation\ValidationException;
@@ -57,6 +58,8 @@ class Handler extends ExceptionHandler
                 } else {
                     throw new InvalidAccessTokenException();
                 }
+            } elseif ($e instanceof AuthorizationException) {
+                throw new ForbiddenAccessException();
             }
 
             $message = match (true) {
