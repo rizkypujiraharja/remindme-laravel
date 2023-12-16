@@ -2,7 +2,7 @@
 
 namespace App\Exceptions;
 
-class InvalildAccessTokenException extends CommonErrorException
+class InvalidAccessTokenException extends CommonErrorException
 {
     protected $message = 'invalid access token';
     protected $error = "ERR_INVALID_ACCESS_TOKEN";

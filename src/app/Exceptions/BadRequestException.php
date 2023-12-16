@@ -4,7 +4,7 @@ namespace App\Exceptions;
 
 class BadRequestException extends CommonErrorException
 {
-    protected $message = 'bad Request';
+    protected $message = 'bad request';
     protected $error = "ERR_BAD_REQUEST";
     protected $code = 400;
 
