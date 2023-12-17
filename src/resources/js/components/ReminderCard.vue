@@ -29,6 +29,7 @@
                 </p>
 
                 <fwb-button
+                    @click="$emit('showEditModal', reminder)"
                     color="alternative"
                     size="sm"
                     outline
@@ -92,7 +93,7 @@ const getHourAndMinuteFromSecond = (seconds) => {
     return dayjs.unix(seconds).format("hh:mm A");
 };
 
-const emit = defineEmits(['deletedReminder'])
+const emit = defineEmits(['deletedReminder', 'showEditModal'])
 
 const deleteReminder = (reminder) => {
     const confirmation = confirm("Are you sure you want to delete this reminder?");
