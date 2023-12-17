@@ -10,6 +10,7 @@
             v-for="reminder in reminders"
             :reminder="reminder"
             :key="reminder.id"
+            @deletedReminder="deletedReminder"
         />
     </div>
 </template>
@@ -18,7 +19,7 @@
 import { FwbButton } from "flowbite-vue";
 import ReminderCard from "../components/ReminderCard.vue";
 
-import { apiGetReminders, apiCreateReminder, apiUpdateReminder, apiDeleteReminder  } from "../api/reminder"
+import { apiGetReminders, apiDeleteReminder } from "../api/reminder"
 import { onMounted, reactive } from "vue";
 
 onMounted(() => {
@@ -36,5 +37,10 @@ const getReminders = () => {
         .catch((error) => {
             console.log(error);
         });
+};
+
+const deletedReminder = (reminder) => {
+    const indexReminder = reminders.findIndex((data) => data.id === reminder.id);
+    reminders.splice(indexReminder, 1);
 };
 </script>

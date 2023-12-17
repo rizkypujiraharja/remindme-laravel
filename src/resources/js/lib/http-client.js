@@ -1,5 +1,5 @@
 import axios from "axios";
-import { getCookie, removeCookie } from "@/lib/cookie";
+import { getCookie, setCookie, removeCookie } from "@/lib/cookie";
 
 const url = import.meta.env.VITE_API_URL || "http://localhost:8000/api";
 
@@ -8,27 +8,36 @@ const refreshToken = getCookie("refresh_token");
 
 const globalResponseHandler = (response) => response;
 
-const globalErrorHandler = (error) => {
-    // const status = error?.response?.status;
-    // const isTokenExpired = status === 401;
+const globalErrorHandler = async (error) => {
+    const originalRequest = error.config;
+    const status = error?.response?.status;
+    const err = error?.response?.data.err;
+    const isTokenExpired = status === 401 && err === "ERR_INVALID_ACCESS_TOKEN" && refreshToken;
 
-    // const origin = window?.location?.origin;
+    if (!isTokenExpired) {
+        return Promise.reject(error);
+    } else if (!refreshToken) {
+        window.location.href = "/login";
+    }
 
-    // if (isTokenExpired) {
-    //     const currentURL = window?.location?.pathname;
-    //     let nextURL = "";
-    //     if (currentURL?.includes("control-tower")) {
-    //         nextURL = `${origin}/control-tower`;
-    //     } else {
-    //         nextURL = "";
-    //     }
-    //     removeCookie("token");
-    //     localStorage.clear();
-    //     const originalRequest = error.config;
-    //     delete originalRequest?.headers?.Authorization;
-    //     history.pushState(null, "", nextURL);
-    // }
-    return Promise.reject(error);
+    try {
+        const response = await axios.put("/api/session", null, {
+            headers: {
+                Authorization: `Bearer ${refreshToken}`,
+            },
+        });
+
+        const data = response.data.data;
+        setCookie("access_token", data.access_token, 20);
+
+        originalRequest.headers.Authorization = `Bearer ${data.access_token}`;
+
+        return axios(originalRequest);
+    } catch (err) {
+        removeCookie('access_token');
+        removeCookie('refresh_token');
+        window.location.href = "/login";
+    }
 };
 
 const clientConfig = () =>

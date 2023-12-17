@@ -38,6 +38,7 @@
                 </fwb-button>
 
                 <fwb-button
+                    @click="deleteReminder(reminder)"
                     color="alternative"
                     size="sm"
                     outline
@@ -52,6 +53,7 @@
 
 <script lang="js" setup>
 import { FwbButton } from "flowbite-vue";
+import { apiDeleteReminder } from "../api/reminder";
 import dayjs from "dayjs";
 
 const props = defineProps({
@@ -88,5 +90,25 @@ const getMonthAndYearFromSecond = (seconds) => {
 
 const getHourAndMinuteFromSecond = (seconds) => {
     return dayjs.unix(seconds).format("hh:mm A");
+};
+
+const emit = defineEmits(['deletedReminder'])
+
+const deleteReminder = (reminder) => {
+    const confirmation = confirm("Are you sure you want to delete this reminder?");
+
+    if(!confirmation) {
+        return;
+    }
+
+    apiDeleteReminder(reminder)
+        .then((response) => {
+            emit('deletedReminder', reminder)
+        })
+        .catch((error) => {
+            console.log(error);
+        });
+
+
 };
 </script>
