@@ -98,6 +98,19 @@ services:
         networks:
             - remindme-laravel
 
+    scheduler:
+        build:
+            context: .
+            dockerfile: php.dockerfile
+        container_name: scheduler
+        restart: always
+        volumes:
+            - ./src:/var/www/html
+        working_dir: /var/www/html
+        entrypoint: ['php', 'artisan', 'schedule:work']
+        networks:
+            - remindme-laravel
+
 
 
 
