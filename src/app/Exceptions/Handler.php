@@ -40,7 +40,6 @@ class Handler extends ExceptionHandler
      */
     public function render($request, Throwable $e)
     {
-        dd($e);
         $parent = parent::render($request, $e);
         $debug = config('app.debug');
         $trace = $debug ? $e->getTrace() : [];
