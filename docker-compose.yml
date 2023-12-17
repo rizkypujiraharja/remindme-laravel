@@ -13,6 +13,7 @@ services:
         depends_on:
             - php
             - mysql
+            - mailpit
         container_name: nginx
         ports:
             - 8000:80
@@ -77,6 +78,36 @@ services:
             MYSQL_USER: laravel
             MYSQL_PASSWORD: secret
             MYSQL_ROOT_PASSWORD: secret
+        networks:
+            - remindme-laravel
+
+    mailpit:
+        image: axllent/mailpit
+        container_name: mailpit
+        restart: always
+        volumes:
+            - ./mailpit:/data
+        ports:
+            - 8025:8025
+            - 1025:1025
+        environment:
+            MP_MAX_MESSAGES: 5000
+            MP_DATA_FILE: /data/mailpit.db
+            MP_SMTP_AUTH_ACCEPT_ANY: 1
+            MP_SMTP_AUTH_ALLOW_INSECURE: 1
+        networks:
+            - remindme-laravel
+
+    scheduler:
+        build:
+            context: .
+            dockerfile: php.dockerfile
+        container_name: scheduler
+        restart: always
+        volumes:
+            - ./src:/var/www/html
+        working_dir: /var/www/html
+        entrypoint: ['php', 'artisan', 'schedule:work']
         networks:
             - remindme-laravel
 
