@@ -8,6 +8,7 @@ use App\Http\Requests\ReminderUpcomingRequest;
 use App\Http\Requests\ReminderUpdateRequest;
 use App\Interfaces\ReminderServiceInterface;
 use App\Models\Reminder;
+use App\Notifications\DueReminderNotification;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\Request;
 
@@ -50,5 +51,24 @@ class ReminderService implements ReminderServiceInterface
             throw new ForbiddenAccessException();
         }
         $reminder->delete();
+    }
+
+    public function sendDueReminders(): void
+    {
+        Reminder::dueRemind()
+            ->whereNull('notify_at')
+            ->with('user')
+            ->chunk(100, function ($reminders) {
+                foreach ($reminders as $reminder) {
+                    $this->sendReminder($reminder);
+                }
+            });
+    }
+
+    private function sendReminder(Reminder $reminder): void
+    {
+        $reminder->user->notify(new DueReminderNotification($reminder));
+        $reminder->notify_at = now();
+        $reminder->save();
     }
 }

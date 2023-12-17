@@ -31,4 +31,9 @@ class Reminder extends Model
     {
         return $query->where('event_at', '>', now());
     }
+
+    public function scopeDueRemind($query)
+    {
+        return $query->where('remind_at', '<=', now());
+    }
 }
