@@ -32,6 +32,15 @@
                     label="Remind At"
                 />
             </form>
+
+            <fwb-alert
+                border
+                type="danger"
+                v-if="errorSubmit.isError"
+                class="mt-4"
+            >
+                {{ errorSubmit.errorMessage }}
+            </fwb-alert>
         </template>
         <template #footer>
             <fwb-button @click="submit" color="default">
@@ -45,8 +54,8 @@
 </template>
 
 <script lang="js" setup>
-import { defineProps, computed } from "vue";
-import { FwbButton, FwbModal, FwbInput } from "flowbite-vue";
+import { defineProps, computed, reactive } from "vue";
+import { FwbButton, FwbModal, FwbInput, FwbAlert } from "flowbite-vue";
 import { apiCreateReminder, apiUpdateReminder } from "../api/reminder";
 
 const props = defineProps({
@@ -62,6 +71,11 @@ const closeModal = () => {
     emit("closeModal");
 };
 
+const errorSubmit = reactive({
+    isError: "",
+    errorMessage: "",
+});
+
 const submit = () => {
     const eventAt = new Date(props.reminder.event_at).getTime() / 1000;
     const remindAt = new Date(props.reminder.remind_at).getTime() / 1000;
@@ -73,7 +87,10 @@ const submit = () => {
         }).then((response) => {
             emit("submited");
             closeModal();
-        });
+        })
+        .catch((error) => {
+            showAlertSubmit(error.response.data.msg);
+        })
     } else {
         apiUpdateReminder({
             ...props.reminder,
@@ -82,7 +99,19 @@ const submit = () => {
         }).then((response) => {
             emit("submited");
             closeModal();
-        });
+        }).then((error) => {
+            showAlertSubmit(error.response.data.msg);
+        })
     }
 };
+
+const showAlertSubmit = (message) => {
+    errorSubmit.isError = true;
+    errorSubmit.errorMessage = message;
+
+    setTimeout(() => {
+        errorSubmit.isError = false;
+        errorSubmit.errorMessage = "";
+    }, 3000);
+}
 </script>

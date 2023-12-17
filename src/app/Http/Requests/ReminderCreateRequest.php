@@ -36,4 +36,11 @@ class ReminderCreateRequest extends FormRequest
             'event_at' => date('Y-m-d H:i:s', $this->event_at),
         ]);
     }
+
+    public function messages()
+    {
+        return [
+            'remind_at.lte' => 'Remind at must be less than or equal to event at',
+        ];
+    }
 }
