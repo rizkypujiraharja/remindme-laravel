@@ -17,21 +17,27 @@ jobs:
       working-directory: src
       run: php -r "file_exists('.env') || copy('.env.example', '.env');"
     - name: Install composer dependencies
+      working-directory: src
       run: composer install
     - name: Set required directory permissions
+      working-directory: src
       run: chmod -R 777 storage bootstrap/cache
     - name: Generate encryption key
+      working-directory: src
       run: php artisan key:generate
     - name: Create temporary sqlite database
+      working-directory: src
       run: |
         mkdir -p database
         touch database/database.sqlite
     - name: Run laravel database migrations
+      working-directory: src
       env:
         DB_CONNECTION: sqlite
         DB_DATABASE: database/database.sqlite
       run: php artisan migrate --force
     - name: Run unit tests via PHPUnit
+      working-directory: src
       env:
         DB_CONNECTION: sqlite
         DB_DATABASE: database/database.sqlite
