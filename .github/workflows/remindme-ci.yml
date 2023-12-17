@@ -53,10 +53,3 @@ jobs:
       - name: Build assets
         working-directory: src
         run: npm run build
-
-  laravel-docker-compose:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-      - name: Build docker & running
-        run: docker compose up -d --build
