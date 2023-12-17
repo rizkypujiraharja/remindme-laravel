@@ -41,7 +41,7 @@ jobs:
       env:
         DB_CONNECTION: sqlite
         DB_DATABASE: database/database.sqlite
-      run: ./vendor/bin/phpunit
+      run: php artisan test
 
   laravel-build-assets:
     runs-on: ubuntu-latest
