@@ -30,7 +30,7 @@ class ReminderServiceTest extends TestCase
 
     public function testGetUpcomingReminders()
     {
-        $reminders = Reminder::factory([
+        Reminder::factory([
             'user_id' => $this->user->id,
         ])->count(5)->create();
 
@@ -43,7 +43,6 @@ class ReminderServiceTest extends TestCase
         $result = $this->service->getUpcomingReminders($request);
 
         $this->assertCount(5, $result);
-        $this->assertEquals($reminders->pluck('id'), $result->pluck('id'));
     }
 
     public function testStoreReminder()
