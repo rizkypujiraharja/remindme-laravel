@@ -9,7 +9,7 @@ services:
     nginx:
         build:
             context: .
-            dockerfile: nginx.dockerfile
+            dockerfile: nginx.Dockerfile
         depends_on:
             - php
             - mysql
@@ -26,7 +26,7 @@ services:
     php:
         build:
             context: .
-            dockerfile: php.dockerfile
+            dockerfile: php.Dockerfile
         container_name: php
         volumes:
             - ./src:/var/www/html
@@ -45,7 +45,7 @@ services:
     artisan:
         build:
             context: .
-            dockerfile: php.dockerfile
+            dockerfile: php.Dockerfile
         container_name: artisan
         volumes:
             - ./src:/var/www/html
@@ -101,7 +101,7 @@ services:
     scheduler:
         build:
             context: .
-            dockerfile: php.dockerfile
+            dockerfile: php.Dockerfile
         container_name: scheduler
         restart: always
         volumes:
